@@ -16,7 +16,7 @@ const sequelize = new Sequelize(CONNECTION_STRING, {
 
 
 module.exports = {
-    seed: (req, res) => {
+    seed: (_req, res) => {
         sequelize.query(`
             drop table if exists cities;
             drop table if exists countries;
@@ -28,9 +28,9 @@ module.exports = {
 
             CREATE TABLE cities (
                 city_id SERIAL PRIMARY KEY,
-                name VARCHAR(255),
-                rating INTEGER,
-                country_id INTEGER REFERENCES countries(country_id)
+                name VARCHAR(128),
+                rating INT,
+                country_id INT REFERENCES countries(country_id)
                 );
             
 
@@ -237,7 +237,7 @@ module.exports = {
 
     },
 
-    getCountries: (req, res) => {
+    getCountries: (_req, res) => {
         sequelize.query (` SELECT * FROM countries`)
              .then(dbRes => res.status(200).send(dbRes[0]))
         .catch(err => console.log(err))
@@ -259,17 +259,15 @@ module.exports = {
             SELECT ci.city_id, ci.name AS city, ci.rating, co.country_id, co.name AS country
                 FROM cities AS ci
                     JOIN countries AS co ON ci.country_id = co.country_id;
-        `)
-        .then(dbRes => res.status(200).send(dbRes[0]))
+        `).then(dbRes => res.status(200).send(dbRes[0]))
     },
 
     deleteCity: (req, res) => {
         const { id } = req.params
         sequelize.query(`
-         DELETE FROM cities
-            WHERE city_id = ${id}
-        `)
-        .then(dbRes => res.status(200).send(dbRes[0]))
+        DELETE FROM cities
+        WHERE city_id = ${id}
+        `).then(dbRes => res.status(200).send(dbRes[0]))
     }
 
 
